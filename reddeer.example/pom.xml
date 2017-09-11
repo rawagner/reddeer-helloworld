@@ -24,14 +24,14 @@
 
 	<repositories>
 		<repository>
-			<id>neon</id>
+			<id>oxygen</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/neon</url>
+			<url>http://download.eclipse.org/releases/oxygen</url>
 		</repository>
 		<repository>
 			<id>RedDeer</id>
 			<layout>p2</layout>
-			<url>http://download.jboss.org/jbosstools/neon/snapshots/builds/reddeer_master/</url>
+			<url>http://download.eclipse.org/reddeer/snapshots/</url>
 		</repository>
 	</repositories>
 

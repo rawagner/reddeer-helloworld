@@ -4,6 +4,6 @@ Bundle-Name: reddeer.example Reddeer Test
 Bundle-SymbolicName: reddeer.example
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.jboss.reddeer.go;bundle-version="2.0.0",
+Require-Bundle: org.eclipse.reddeer.go;bundle-version="2.0.0",
  org.eclipse.ui.views.log,
  org.eclipse.jdt.debug.ui

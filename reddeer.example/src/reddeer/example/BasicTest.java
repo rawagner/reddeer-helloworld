@@ -2,27 +2,22 @@ package reddeer.example;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
-
-import org.jboss.reddeer.common.matcher.RegexMatcher;
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.matcher.WithTextMatcher;
-import org.jboss.reddeer.eclipse.condition.ConsoleHasText;
-import org.jboss.reddeer.eclipse.jdt.ui.wizards.JavaProjectWizard;
-import org.jboss.reddeer.eclipse.jdt.ui.wizards.NewClassCreationWizard;
-import org.jboss.reddeer.eclipse.jdt.ui.wizards.NewClassWizardPage;
-import org.jboss.reddeer.eclipse.jdt.ui.wizards.NewJavaProjectWizardPageOne;
-import org.jboss.reddeer.eclipse.ui.console.ConsoleView;
-import org.jboss.reddeer.eclipse.ui.navigator.resources.ProjectExplorer;
-import org.jboss.reddeer.eclipse.ui.views.log.LogMessage;
-import org.jboss.reddeer.eclipse.ui.views.log.LogView;
-import org.jboss.reddeer.junit.runner.RedDeerSuite;
-import org.jboss.reddeer.requirements.cleanworkspace.CleanWorkspaceRequirement.CleanWorkspace;
-import org.jboss.reddeer.swt.impl.menu.ContextMenu;
-import org.jboss.reddeer.workbench.condition.ViewIsOpen;
-import org.jboss.reddeer.workbench.core.condition.JobIsRunning;
-import org.jboss.reddeer.workbench.impl.editor.TextEditor;
+import org.eclipse.reddeer.common.matcher.RegexMatcher;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.core.matcher.WithTextMatcher;
+import org.eclipse.reddeer.eclipse.condition.ConsoleHasText;
+import org.eclipse.reddeer.eclipse.jdt.ui.wizards.JavaProjectWizard;
+import org.eclipse.reddeer.eclipse.jdt.ui.wizards.NewClassCreationWizard;
+import org.eclipse.reddeer.eclipse.jdt.ui.wizards.NewClassWizardPage;
+import org.eclipse.reddeer.eclipse.jdt.ui.wizards.NewJavaProjectWizardPageOne;
+import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
+import org.eclipse.reddeer.eclipse.ui.navigator.resources.ProjectExplorer;
+import org.eclipse.reddeer.eclipse.ui.views.log.LogView;
+import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.requirements.cleanworkspace.CleanWorkspaceRequirement.CleanWorkspace;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
+import org.eclipse.reddeer.workbench.condition.ViewIsOpen;
+import org.eclipse.reddeer.workbench.impl.editor.TextEditor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +42,7 @@ public class BasicTest {
 	public void test(){
 		JavaProjectWizard projectWizard = new JavaProjectWizard();
 		projectWizard.open();
-		NewJavaProjectWizardPageOne projectFirstPage = new NewJavaProjectWizardPageOne();
+		NewJavaProjectWizardPageOne projectFirstPage = new NewJavaProjectWizardPageOne(projectWizard);
 		projectFirstPage.setProjectName(PROJECT_NAME);
 		projectWizard.finish();
 		
@@ -57,7 +52,7 @@ public class BasicTest {
 		
 		NewClassCreationWizard classWizard = new NewClassCreationWizard();
 		classWizard.open();
-		NewClassWizardPage classFirstPage = new NewClassWizardPage();
+		NewClassWizardPage classFirstPage = new NewClassWizardPage(classWizard);
 		classFirstPage.setName(CLASS_NAME);
 		classFirstPage.setPackage(CLASS_PACKAGE);
 		classFirstPage.setStaticMainMethod(true);
@@ -73,27 +68,13 @@ public class BasicTest {
 		textEditor.save();
 		
 		projectExplorer.getProject(PROJECT_NAME).select();
-		new ContextMenu(new WithTextMatcher("Run As"), new WithTextMatcher(new RegexMatcher(".*Java Application.*"))).select();
-		new WaitWhile(new JobIsRunning());
+		new ContextMenuItem(new WithTextMatcher("Run As"), new WithTextMatcher(new RegexMatcher(".*Java Application.*"))).select();
 		
 		new WaitUntil(new ViewIsOpen(new ConsoleView()));
 		new WaitUntil(new ConsoleHasText(CONSOLE_TEXT));
 		
 		errorLog.open();
-		checkLogMessages(errorLog.getErrorMessages());
-		checkLogMessages(errorLog.getWarningMessages());
+		assertTrue(errorLog.getErrorMessages().size() == 0);
+		assertTrue(errorLog.getWarningMessages().size() == 0);
 	}
-	
-	private void checkLogMessages(List<LogMessage> messages){
-		if(messages.size() == 1){
-			//this should be filtered by RedDeer. https://github.com/jboss-reddeer/reddeer/issues/1617
-			if(!messages.get(0).getMessage().contains("No log entry found within maximum log size")){
-				fail("Error log contains message '"+messages.get(0).getMessage()+"'");
-			}
-		} else {
-			assertTrue(messages.size() == 0);
-		}
-		
-	}
-
 }
